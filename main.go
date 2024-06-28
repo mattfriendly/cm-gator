@@ -4,7 +4,7 @@ package main
 *
 * Import section
 *
-*/
+ */
 
 import (
 	"crypto/tls"
@@ -21,7 +21,7 @@ import (
 *
 * Structures
 *
-*/
+ */
 
 // AddUserReq structure for SOAP request
 type AddUserReq struct {
@@ -38,20 +38,20 @@ type AddUserReq struct {
 
 // AddPhoneReq structure for SOAP request
 type AddPhoneReq struct {
-	XMLName              xml.Name `xml:"soapenv:Envelope"`
-	XmlnsSoapenv         string   `xml:"xmlns:soapenv,attr"`
-	XmlnsAxlsql          string   `xml:"xmlns:axl,attr"`
-	Name                 string   `xml:"axl:name"`
-	Product              string   `xml:"axl:product"`
-	Class                string   `xml:"axl:class"`
-	Protocol             string   `xml:"axl:protocol"`
-	ProtocolSide         string   `xml:"axl:protocolSide"`
-	DevicePoolName       string   `xml:"axl:devicePoolName"`
+	XMLName               xml.Name `xml:"soapenv:Envelope"`
+	XmlnsSoapenv          string   `xml:"xmlns:soapenv,attr"`
+	XmlnsAxlsql           string   `xml:"xmlns:axl,attr"`
+	Name                  string   `xml:"axl:name"`
+	Product               string   `xml:"axl:product"`
+	Class                 string   `xml:"axl:class"`
+	Protocol              string   `xml:"axl:protocol"`
+	ProtocolSide          string   `xml:"axl:protocolSide"`
+	DevicePoolName        string   `xml:"axl:devicePoolName"`
 	CommonPhoneConfigName string   `xml:"axl:commonPhoneConfigName"`
-	LocationName         string   `xml:"axl:locationName"`
-	UseTrustedRelayPoint string   `xml:"axl:useTrustedRelayPoint"`
-	PhoneTemplateName    string   `xml:"axl:phoneTemplateName"`
-	Lines                Lines    `xml:"axl:lines"`
+	LocationName          string   `xml:"axl:locationName"`
+	UseTrustedRelayPoint  string   `xml:"axl:useTrustedRelayPoint"`
+	PhoneTemplateName     string   `xml:"axl:phoneTemplateName"`
+	Lines                 Lines    `xml:"axl:lines"`
 }
 
 // Lines structure for SOAP request
@@ -61,27 +61,27 @@ type Lines struct {
 
 // Line structure for SOAP request
 type Line struct {
-	Index int  `xml:"axl:index"`
-	Dirn  Dirn `xml:"axl:dirn"`
+	Index int    `xml:"axl:index"`
+	Dirn  Dirn   `xml:"axl:dirn"`
 	Label string `xml:"axl:label"`
 }
 
 // Dirn structure for SOAP request
 type Dirn struct {
-	Pattern           string `xml:"axl:pattern"`
+	Pattern            string `xml:"axl:pattern"`
 	RoutePartitionName string `xml:"axl:routePartitionName"`
 }
 
 // AssociatePhoneReq structure for SOAP request
 type AssociatePhoneReq struct {
-	XMLName      xml.Name `xml:"soapenv:Envelope"`
-	XmlnsSoapenv string   `xml:"xmlns:soapenv,attr"`
-	XmlnsAxlsql  string   `xml:"xmlns:axl,attr"`
-	Name         string   `xml:"axl:name"`
-	OwnerUserName string   `xml:"axl:ownerUserName"`
-	Userid       string   `xml:"axl:userid"`
-	AssociatedDevices Devices `xml:"axl:associatedDevices"`
-	PrimaryExtension Extension `xml:"axl:primaryExtension"`
+	XMLName           xml.Name  `xml:"soapenv:Envelope"`
+	XmlnsSoapenv      string    `xml:"xmlns:soapenv,attr"`
+	XmlnsAxlsql       string    `xml:"xmlns:axl,attr"`
+	Name              string    `xml:"axl:name"`
+	OwnerUserName     string    `xml:"axl:ownerUserName"`
+	Userid            string    `xml:"axl:userid"`
+	AssociatedDevices Devices   `xml:"axl:associatedDevices"`
+	PrimaryExtension  Extension `xml:"axl:primaryExtension"`
 }
 
 // Devices structure for SOAP request
@@ -91,7 +91,7 @@ type Devices struct {
 
 // Extension structure for SOAP request
 type Extension struct {
-	Pattern           string `xml:"axl:pattern"`
+	Pattern            string `xml:"axl:pattern"`
 	RoutePartitionName string `xml:"axl:routePartitionName"`
 }
 
@@ -104,24 +104,35 @@ type JsonResponse struct {
 
 // GetUserReq structure for SOAP request
 type GetUserReq struct {
-    XMLName      xml.Name `xml:"soapenv:Envelope"`
-    XmlnsSoapenv string   `xml:"xmlns:soapenv,attr"`
-    XmlnsAxl     string   `xml:"xmlns:axl,attr"`
-    UserID       string   `xml:"axl:userid"`
+	XMLName      xml.Name `xml:"soapenv:Envelope"`
+	XmlnsSoapenv string   `xml:"xmlns:soapenv,attr"`
+	XmlnsAxl     string   `xml:"xmlns:axl,attr"`
+	UserID       string   `xml:"axl:userid"`
 }
 
-
 func main() {
+	// Serving files from the static files directory
+	http.Handle("/", http.FileServer(http.Dir("./static")))
+
+	// API endpoints
+	http.HandleFunc("/main", handleMainPage)
 	http.HandleFunc("/addUser", handleAddUserRequest)
 	http.HandleFunc("/addPhone", handleAddPhoneRequest)
 	http.HandleFunc("/associatePhone", handleAssociatePhoneRequest)
-        http.HandleFunc("/getUser", handleGetUserRequest)
+	http.HandleFunc("/getUser", handleGetUserRequest)
+
+	// a test endpoint
+	http.HandleFunc("/api.data", func(w http.ResponseWriter, r *http.Request) {
+		id := r.URL.Query().Get("id")
+		// Use id for something, or remove if not needed
+		fmt.Fprintf(w, "ID: %s", id) // Example response using id
+	})
 
 	// Generate or specify your SSL certificates
-	certFile := "path/to/your/certfile.crt"
-	keyFile := "path/to/your/keyfile.key"
+	certFile := "./cert.pem"
+	keyFile := "./key.pem"
 
-	log.Println("Starting server on :8443")
+	log.Println("Starting server on https://localhost:8443")
 	err := http.ListenAndServeTLS(":8443", certFile, keyFile, nil)
 	if err != nil {
 		log.Fatalf("Server failed to start: %v", err)
@@ -132,9 +143,11 @@ func main() {
 *
 * Request handler functions
 *
-*/
+ */
 
-
+func handleMainPage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./static/index.html")
+}
 
 func handleAddUserRequest(w http.ResponseWriter, r *http.Request) {
 	// Parse the incoming JSON request
@@ -203,39 +216,39 @@ func handleAssociatePhoneRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleGetUserRequest(w http.ResponseWriter, r *http.Request) {
-    // Parse the incoming JSON request to get the UserID
-    var req struct {
-        UserID string `json:"userid"`
-    }
-    err := json.NewDecoder(r.Body).Decode(&req)
-    if err != nil {
-        http.Error(w, "Invalid request", http.StatusBadRequest)
-        return
-    }
+	// Parse the incoming JSON request to get the UserID
+	var req struct {
+		UserID string `json:"userid"`
+	}
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
 
-    // Create the SOAP request
-    getUserReq := GetUserReq{
-        XmlnsSoapenv: "http://schemas.xmlsoap.org/soap/envelope/",
-        XmlnsAxl:     "http://www.cisco.com/AXL/API/14.0",
-        UserID:       req.UserID,
-    }
+	// Create the SOAP request
+	getUserReq := GetUserReq{
+		XmlnsSoapenv: "http://schemas.xmlsoap.org/soap/envelope/",
+		XmlnsAxl:     "http://www.cisco.com/AXL/API/14.0",
+		UserID:       req.UserID,
+	}
 
-    // Forward the request to Cisco AXL API
-    response, err := sendAXLRequest(getUserReq, "getUser")
-    if err != nil {
-        http.Error(w, "Failed to forward request", http.StatusInternalServerError)
-        return
-    }
+	// Forward the request to Cisco AXL API
+	response, err := sendAXLRequest(getUserReq, "getUser")
+	if err != nil {
+		http.Error(w, "Failed to forward request", http.StatusInternalServerError)
+		return
+	}
 
-    // Write the JSON response back to the client
-    jsonResponse(w, http.StatusOK, "User retrieved successfully", response)
+	// Write the JSON response back to the client
+	jsonResponse(w, http.StatusOK, "User retrieved successfully", response)
 }
 
 /****
 *
 * AXL request functions
 *
-*/
+ */
 
 func sendAXLRequest(req interface{}, method string) (interface{}, error) {
 	// Set up the HTTP client with TLS configuration
