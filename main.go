@@ -1,5 +1,11 @@
 package main
 
+/****
+*
+* Import section
+*
+*/
+
 import (
 	"crypto/tls"
 	"encoding/json"
@@ -10,6 +16,12 @@ import (
 
 	"github.com/tiaguinho/gosoap"
 )
+
+/****
+*
+* Structures
+*
+*/
 
 // AddUserReq structure for SOAP request
 type AddUserReq struct {
@@ -90,10 +102,20 @@ type JsonResponse struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
+// GetUserReq structure for SOAP request
+type GetUserReq struct {
+    XMLName      xml.Name `xml:"soapenv:Envelope"`
+    XmlnsSoapenv string   `xml:"xmlns:soapenv,attr"`
+    XmlnsAxl     string   `xml:"xmlns:axl,attr"`
+    UserID       string   `xml:"axl:userid"`
+}
+
+
 func main() {
 	http.HandleFunc("/addUser", handleAddUserRequest)
 	http.HandleFunc("/addPhone", handleAddPhoneRequest)
 	http.HandleFunc("/associatePhone", handleAssociatePhoneRequest)
+        http.HandleFunc("/getUser", handleGetUserRequest)
 
 	// Generate or specify your SSL certificates
 	certFile := "path/to/your/certfile.crt"
@@ -105,6 +127,14 @@ func main() {
 		log.Fatalf("Server failed to start: %v", err)
 	}
 }
+
+/****
+*
+* Request handler functions
+*
+*/
+
+
 
 func handleAddUserRequest(w http.ResponseWriter, r *http.Request) {
 	// Parse the incoming JSON request
@@ -171,6 +201,41 @@ func handleAssociatePhoneRequest(w http.ResponseWriter, r *http.Request) {
 	// Write the JSON response back to the client
 	jsonResponse(w, http.StatusOK, "Operation completed successfully", response)
 }
+
+func handleGetUserRequest(w http.ResponseWriter, r *http.Request) {
+    // Parse the incoming JSON request to get the UserID
+    var req struct {
+        UserID string `json:"userid"`
+    }
+    err := json.NewDecoder(r.Body).Decode(&req)
+    if err != nil {
+        http.Error(w, "Invalid request", http.StatusBadRequest)
+        return
+    }
+
+    // Create the SOAP request
+    getUserReq := GetUserReq{
+        XmlnsSoapenv: "http://schemas.xmlsoap.org/soap/envelope/",
+        XmlnsAxl:     "http://www.cisco.com/AXL/API/14.0",
+        UserID:       req.UserID,
+    }
+
+    // Forward the request to Cisco AXL API
+    response, err := sendAXLRequest(getUserReq, "getUser")
+    if err != nil {
+        http.Error(w, "Failed to forward request", http.StatusInternalServerError)
+        return
+    }
+
+    // Write the JSON response back to the client
+    jsonResponse(w, http.StatusOK, "User retrieved successfully", response)
+}
+
+/****
+*
+* AXL request functions
+*
+*/
 
 func sendAXLRequest(req interface{}, method string) (interface{}, error) {
 	// Set up the HTTP client with TLS configuration
