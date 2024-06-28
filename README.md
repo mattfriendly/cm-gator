@@ -127,16 +127,6 @@ These functions update the phone to set the owner user ID and associate the devi
   "userid": "example_user_id"
 }
 ```
-
-## Lines
-
-**Purpose**: Represents the lines (extensions) configuration for a phone.
-
-**Structure Fields**:
-- `Line`: A list of Line structures, each representing a phone line.
-
-**CUCM Function Mapped**: Part of the `addPhone` function, configuring the lines for the new phone.
-
 ## Line
 
 **Purpose**: Represents a single phone line (extension) configuration.
@@ -147,6 +137,15 @@ These functions update the phone to set the owner user ID and associate the devi
 - `Label`: The label for the line.
 
 **CUCM Function Mapped**: Part of the `addPhone` function, specifying the details of each line on the phone.
+
+## Lines (plural)
+
+**Purpose**: Represents the lines (extensions) configuration for a phone.
+
+**Structure Fields**:
+- `Line`: A list of Line structures, each representing a phone line.
+
+**CUCM Function Mapped**: Part of the `addPhone` function, configuring the lines for the new phone.
 
 ## Dirn
 
