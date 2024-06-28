@@ -20,8 +20,9 @@ This function creates a new user in the CUCM database with the specified details
 
 - **Endpoint**: `/addUser`
 - **Method**: `POST`
-- **Body**: `JSON~
+- **Body**: `JSON`
 
+```
   {
     "userid": "newuser",
     "lastName": "User",
@@ -30,6 +31,7 @@ This function creates a new user in the CUCM database with the specified details
     "pin": "12345",
     "telephoneNumber": "1234567890"
   }
+```
 
 ## AddPhoneReq
 
@@ -56,8 +58,9 @@ This function adds a new phone to the CUCM database with the specified configura
 
 - **Endpoint**: `/addPhone`
 - **Method**: `POST`
-- **Body**: `JSON~
+- **Body**: `JSON`
 
+```
 {
   "name": "SEP001122334455",
   "product": "Cisco 8841",
@@ -78,7 +81,7 @@ This function adds a new phone to the CUCM database with the specified configura
     }
   ]
 }
-
+```
 
 ## Lines
 
@@ -129,8 +132,9 @@ These functions update the phone to set the owner user ID and associate the devi
 
 - **Endpoint**: `/associatePhone`
 - **Method**: `POST`
-- **Body**: `JSON~
+- **Body**: `JSON`
 
+```
 {
   "name": "SEP001122334455",
   "ownerUserName": "newuser",
@@ -141,6 +145,7 @@ These functions update the phone to set the owner user ID and associate the devi
     "routePartitionName": "Internal"
   }
 }
+```
 
 ## Devices
 
