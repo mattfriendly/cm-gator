@@ -82,37 +82,6 @@ This function adds a new phone to the CUCM database with the specified configura
   ]
 }
 ```
-
-## Lines
-
-**Purpose**: Represents the lines (extensions) configuration for a phone.
-
-**Structure Fields**:
-- `Line`: A list of Line structures, each representing a phone line.
-
-**CUCM Function Mapped**: Part of the `addPhone` function, configuring the lines for the new phone.
-
-## Line
-
-**Purpose**: Represents a single phone line (extension) configuration.
-
-**Structure Fields**:
-- `Index`: The index of the line (e.g., 1 for the primary line).
-- `Dirn`: The directory number (extension) configuration.
-- `Label`: The label for the line.
-
-**CUCM Function Mapped**: Part of the `addPhone` function, specifying the details of each line on the phone.
-
-## Dirn
-
-**Purpose**: Represents the directory number (extension) for a phone line.
-
-**Structure Fields**:
-- `Pattern`: The extension number.
-- `RoutePartitionName`: The route partition to which the extension belongs.
-
-**CUCM Function Mapped**: Part of the `addPhone` function, specifying the extension details.
-
 ## AssociatePhoneReq
 
 **Purpose**: Represents a request to associate a phone with a user in CUCM.
@@ -146,6 +115,48 @@ These functions update the phone to set the owner user ID and associate the devi
   }
 }
 ```
+
+## getUser
+
+- **URL Endpoint**: `/getUser`
+- **HTTP Method**: `POST`
+- **JSON Request Example**:
+
+```
+{
+  "userid": "example_user_id"
+}
+```
+
+## Lines
+
+**Purpose**: Represents the lines (extensions) configuration for a phone.
+
+**Structure Fields**:
+- `Line`: A list of Line structures, each representing a phone line.
+
+**CUCM Function Mapped**: Part of the `addPhone` function, configuring the lines for the new phone.
+
+## Line
+
+**Purpose**: Represents a single phone line (extension) configuration.
+
+**Structure Fields**:
+- `Index`: The index of the line (e.g., 1 for the primary line).
+- `Dirn`: The directory number (extension) configuration.
+- `Label`: The label for the line.
+
+**CUCM Function Mapped**: Part of the `addPhone` function, specifying the details of each line on the phone.
+
+## Dirn
+
+**Purpose**: Represents the directory number (extension) for a phone line.
+
+**Structure Fields**:
+- `Pattern`: The extension number.
+- `RoutePartitionName`: The route partition to which the extension belongs.
+
+**CUCM Function Mapped**: Part of the `addPhone` function, specifying the extension details.
 
 ## Devices
 
