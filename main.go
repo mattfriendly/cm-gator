@@ -17,6 +17,9 @@ import (
 	"github.com/tiaguinho/gosoap"
 )
 
+// CUCM Address from Cisco devnet sandbox
+var CUCM_ADDRESS = "10.10.20.1"
+
 /****
 *
 * Structures
@@ -258,7 +261,9 @@ func sendAXLRequest(req interface{}, method string) (interface{}, error) {
 		},
 	}
 
-	client, err := gosoap.SoapClient("https://<CUCM_ADDRESS>:8443/axl/", httpClient)
+	CUCM_url := fmt.Sprintf("https://%s:8443/axl/", CUCM_ADDRESS)
+
+	client, err := gosoap.SoapClient(CUCM_url, httpClient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create SOAP client: %v", err)
 	}
