@@ -110,7 +110,6 @@ type GetUserReq struct {
     UserID       string   `xml:"axl:userid"`
 }
 
-
 func main() {
 	http.HandleFunc("/addUser", handleAddUserRequest)
 	http.HandleFunc("/addPhone", handleAddPhoneRequest)
@@ -133,8 +132,6 @@ func main() {
 * Request handler functions
 *
 */
-
-
 
 func handleAddUserRequest(w http.ResponseWriter, r *http.Request) {
 	// Parse the incoming JSON request
