@@ -76,8 +76,6 @@ Each endpoint in the API is designed to manage specific resources within the Cis
   ```
 
 
-This snippet provides detailed information about handling errors and a sample cURL command for making a request to the `/addUser` endpoint.
-
 ### 2. Add Phone
 
 - **URL**: `/addPhone`
