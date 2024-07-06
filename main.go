@@ -7,14 +7,15 @@ package main
 */
 
 import (
-	"crypto/tls"
-	"encoding/json"
-	"encoding/xml"
-	"fmt"
-	"log"
-	"net/http"
-
-	"github.com/tiaguinho/gosoap"
+        "bytes"
+        "crypto/tls"
+        "encoding/base64"
+        "encoding/json"
+        "encoding/xml"
+        "fmt"
+        "io/ioutil"
+        "log"
+        "net/http"
 )
 
 /****
@@ -140,10 +141,10 @@ type GetUserReq struct {
 }
 
 func main() {
-	http.HandleFunc("/addUser", handleAddUserRequest)
-	http.HandleFunc("/addPhone", handleAddPhoneRequest)
-	http.HandleFunc("/associatePhone", handleAssociatePhoneRequest)
-        http.HandleFunc("/getUser", handleGetUserRequest)
+//	http.HandleFunc("/addUser", handleAddUserRequest)
+//	http.HandleFunc("/addPhone", handleAddPhoneRequest)
+//	http.HandleFunc("/associatePhone", handleAssociatePhoneRequest)
+//      http.HandleFunc("/getUser", handleGetUserRequest)
 	http.HandleFunc("/listUsers", handleListUsersRequest) // New endpoint for listing users
 
 	// Generate or specify your SSL certificates
@@ -165,44 +166,54 @@ func main() {
 
 // Handler function for listing users
 func handleListUsersRequest(w http.ResponseWriter, r *http.Request) {
-	// Create the SOAP request
-	req := ExecuteSQLQueryReq{
-		XmlnsSoapenv: "http://schemas.xmlsoap.org/soap/envelope/",
-		XmlnsAxl:     "http://www.cisco.com/AXL/API/14.0",
-	}
-	req.Body.ExecuteSQLQuery.SQL = "SELECT userid, firstname, lastname, department FROM enduser"
+        // Create the SOAP request
+        soapRequest := `
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:axl="http://www.cisco.com/AXL/API/14.0">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <axl:executeSQLQuery>
+         <sql>SELECT userid, firstname, lastname, department FROM enduser</sql>
+      </axl:executeSQLQuery>
+   </soapenv:Body>
+</soapenv:Envelope>`
 
-	// Forward the request to Cisco AXL API
-	response, err := sendAXLRequest(req, "executeSQLQuery")
-	if err != nil {
-		http.Error(w, "Failed to forward request", http.StatusInternalServerError)
-		logResponse("error", err.Error(), nil)
-		return
-	}
+        // Forward the request to Cisco AXL API
+        response, err := sendAXLRequest(soapRequest)
+        if err != nil {
+                http.Error(w, "Failed to forward request", http.StatusInternalServerError)
+                logResponse("error", err.Error(), nil)
+                return
+        }
 
-	// Parse the SOAP response
-	var resp ExecuteSQLQueryResp
-	if err := xml.Unmarshal(response, &resp); err != nil {
-		http.Error(w, "Failed to parse response", http.StatusInternalServerError)
-		logResponse("error", err.Error(), nil)
-		return
-	}
+        // Parse the SOAP response
+        var resp ExecuteSQLQueryResp
+        if err := xml.Unmarshal(response, &resp); err != nil {
+                http.Error(w, "Failed to parse response", http.StatusInternalServerError)
+                logResponse("error", err.Error(), nil)
+                return
+        }
 
-	// Extract user information
-	users := make([]map[string]string, len(resp.Body.ExecuteSQLQueryResponse.Return.Rows))
-	for i, row := range resp.Body.ExecuteSQLQueryResponse.Return.Rows {
-		users[i] = map[string]string{
-			"userid":     row.UserID,
-			"firstname":  row.FirstName,
-			"lastname":   row.LastName,
-			"department": row.Department,
-		}
-	}
+        // Extract user information
+        users := make([]map[string]string, len(resp.Body.ExecuteSQLQueryResponse.Return.Rows))
+        for i, row := range resp.Body.ExecuteSQLQueryResponse.Return.Rows {
+                users[i] = map[string]string{
+                        "userid":     row.UserID,
+                        "firstname":  row.FirstName,
+                        "lastname":   row.LastName,
+                        "department": row.Department,
+                }
+        }
 
-	// Write the JSON response back to the client
-	jsonResponse(w, http.StatusOK, "Users retrieved successfully", users)
+        // Write the JSON response back to the client
+        jsonResponse(w, http.StatusOK, "Users retrieved successfully", users)
 }
 
+/* Tertiary functions
+*  needs refactoring
+*
+*/
+
+/*
 func handleAddUserRequest(w http.ResponseWriter, r *http.Request) {
 	// Parse the incoming JSON request
 	var req AddUserReq
@@ -297,6 +308,7 @@ func handleGetUserRequest(w http.ResponseWriter, r *http.Request) {
     // Write the JSON response back to the client
     jsonResponse(w, http.StatusOK, "User retrieved successfully", response)
 }
+*/
 
 /****
 *
@@ -304,25 +316,47 @@ func handleGetUserRequest(w http.ResponseWriter, r *http.Request) {
 *
 */
 
-func sendAXLRequest(req interface{}, method string) (interface{}, error) {
-	// Set up the HTTP client with TLS configuration
-	httpClient := &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		},
-	}
+func sendAXLRequest(soapRequest string) ([]byte, error) {
+        // Set up the HTTP client with TLS configuration
+        httpClient := &http.Client{
+                Transport: &http.Transport{
+                        TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+                },
+        }
 
-	client, err := gosoap.SoapClient("https://10.10.20.1:8443/axl/", httpClient)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create SOAP client: %v", err)
-	}
+        // Create the HTTP request
+        req, err := http.NewRequest("POST", "https://10.10.20.1:8443/axl/", bytes.NewBuffer([]byte(soapRequest)))
+        if err != nil {
+                return nil, fmt.Errorf("failed to create HTTP request: %v", err)
+        }
+        req.Header.Set("Content-Type", "text/xml")
+        req.Header.Set("SOAPAction", "CUCM:DB ver=14.0")
 
-	resp, err := client.Call(method, req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to call AXL API: %v", err)
-	}
+        // Add Basic Authentication header
+        username := "axluser"
+        password := "temp123"
+        auth := username + ":" + password
+        req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
 
-	return resp, nil
+        // Send the HTTP request
+        resp, err := httpClient.Do(req)
+        if err != nil {
+                return nil, fmt.Errorf("failed to send HTTP request: %v", err)
+        }
+        defer resp.Body.Close()
+
+        // Read the response body
+        body, err := ioutil.ReadAll(resp.Body)
+        if err != nil {
+                return nil, fmt.Errorf("failed to read response body: %v", err)
+        }
+
+        // Log the HTML response for debugging
+        if resp.Header.Get("Content-Type") == "text/html" {
+                log.Printf("Received HTML response: %s", string(body))
+        }
+
+        return body, nil
 }
 
 func jsonResponse(w http.ResponseWriter, statusCode int, message string, data interface{}) {
