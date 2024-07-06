@@ -23,6 +23,35 @@ import (
 *
 */
 
+// ExecuteSQLQueryReq structure for SOAP request
+type ExecuteSQLQueryReq struct {
+	XMLName      xml.Name `xml:"soapenv:Envelope"`
+	XmlnsSoapenv string   `xml:"xmlns:soapenv,attr"`
+	XmlnsAxl     string   `xml:"xmlns:axl,attr"`
+	Body         struct {
+		ExecuteSQLQuery struct {
+			SQL string `xml:"sql"`
+		} `xml:"axl:executeSQLQuery"`
+	} `xml:"soapenv:Body"`
+}
+
+// ExecuteSQLQueryResp structure for SOAP response
+type ExecuteSQLQueryResp struct {
+	XMLName xml.Name `xml:"Envelope"`
+	Body    struct {
+		ExecuteSQLQueryResponse struct {
+			Return struct {
+				Rows []struct {
+					UserID     string `xml:"userid"`
+					FirstName  string `xml:"firstname"`
+					LastName   string `xml:"lastname"`
+					Department string `xml:"department"`
+				} `xml:"row"`
+			} `xml:"return"`
+		} `xml:"executeSQLQueryResponse"`
+	} `xml:"Body"`
+}
+
 // AddUserReq structure for SOAP request
 type AddUserReq struct {
 	XMLName         xml.Name `xml:"soapenv:Envelope"`
@@ -110,12 +139,12 @@ type GetUserReq struct {
     UserID       string   `xml:"axl:userid"`
 }
 
-
 func main() {
 	http.HandleFunc("/addUser", handleAddUserRequest)
 	http.HandleFunc("/addPhone", handleAddPhoneRequest)
 	http.HandleFunc("/associatePhone", handleAssociatePhoneRequest)
         http.HandleFunc("/getUser", handleGetUserRequest)
+	http.HandleFunc("/listUsers", handleListUsersRequest) // New endpoint for listing users
 
 	// Generate or specify your SSL certificates
 	certFile := "path/to/your/certfile.crt"
@@ -134,7 +163,45 @@ func main() {
 *
 */
 
+// Handler function for listing users
+func handleListUsersRequest(w http.ResponseWriter, r *http.Request) {
+	// Create the SOAP request
+	req := ExecuteSQLQueryReq{
+		XmlnsSoapenv: "http://schemas.xmlsoap.org/soap/envelope/",
+		XmlnsAxl:     "http://www.cisco.com/AXL/API/14.0",
+	}
+	req.Body.ExecuteSQLQuery.SQL = "SELECT userid, firstname, lastname, department FROM enduser"
 
+	// Forward the request to Cisco AXL API
+	response, err := sendAXLRequest(req, "executeSQLQuery")
+	if err != nil {
+		http.Error(w, "Failed to forward request", http.StatusInternalServerError)
+		logResponse("error", err.Error(), nil)
+		return
+	}
+
+	// Parse the SOAP response
+	var resp ExecuteSQLQueryResp
+	if err := xml.Unmarshal(response, &resp); err != nil {
+		http.Error(w, "Failed to parse response", http.StatusInternalServerError)
+		logResponse("error", err.Error(), nil)
+		return
+	}
+
+	// Extract user information
+	users := make([]map[string]string, len(resp.Body.ExecuteSQLQueryResponse.Return.Rows))
+	for i, row := range resp.Body.ExecuteSQLQueryResponse.Return.Rows {
+		users[i] = map[string]string{
+			"userid":     row.UserID,
+			"firstname":  row.FirstName,
+			"lastname":   row.LastName,
+			"department": row.Department,
+		}
+	}
+
+	// Write the JSON response back to the client
+	jsonResponse(w, http.StatusOK, "Users retrieved successfully", users)
+}
 
 func handleAddUserRequest(w http.ResponseWriter, r *http.Request) {
 	// Parse the incoming JSON request
@@ -245,7 +312,7 @@ func sendAXLRequest(req interface{}, method string) (interface{}, error) {
 		},
 	}
 
-	client, err := gosoap.SoapClient("https://<CUCM_ADDRESS>:8443/axl/", httpClient)
+	client, err := gosoap.SoapClient("https://10.10.20.1:8443/axl/", httpClient)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create SOAP client: %v", err)
 	}
