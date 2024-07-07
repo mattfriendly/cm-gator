@@ -214,15 +214,13 @@ type AddPhoneReq struct {
 
 // AddPhoneResp structure for SOAP response
 type AddPhoneResp struct {
-    XMLName xml.Name `xml:"Envelope"`
-    Body    struct {
+    Body struct {
         AddPhoneResponse struct {
-            Return struct {
-                Name string `xml:"name"`
-            } `xml:"return"`
+            Return string `xml:"return"`
         } `xml:"addPhoneResponse"`
     } `xml:"Body"`
 }
+
 
 func boolToIntStringPtr(value *bool) string {
     if value == nil {
@@ -240,13 +238,6 @@ func boolToString(value bool) string {
         return "true"
     }
     return "false"
-}
-
-func boolToIntString(value bool) string {
-    if value {
-        return "1"
-    }
-    return "0"
 }
 
 func main() {
@@ -656,8 +647,8 @@ func sendAXLRequest(soapRequest string) ([]byte, error) {
         req.Header.Set("Content-Type", "text/xml")
         req.Header.Set("SOAPAction", "CUCM:DB ver=14.0")
 
-        username := ""
-        password := ""
+        username := "axluser"
+        password := "temp123"
         auth := username + ":" + password
         req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
 
