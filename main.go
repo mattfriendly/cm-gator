@@ -1,5 +1,11 @@
 package main
 
+/****
+*
+* Imports
+*
+*/
+
 import (
         "bytes"
         "crypto/tls"
@@ -54,169 +60,193 @@ type JsonResponse struct {
     Data    interface{} `json:"data,omitempty"`
 }
 
-// AddPhoneReq structure for JSON request
 type AddPhoneReq struct {
-        Name                       string  `json:"name"`
-        Description                string  `json:"description"`
-        Product                    string  `json:"product"`
-        Class                      string  `json:"class"`
-        Protocol                   string  `json:"protocol"`
-        ProtocolSide               string  `json:"protocolSide"`
-        CallingSearchSpaceName     string  `json:"callingSearchSpaceName"`
-        DevicePoolName             string  `json:"devicePoolName"`
-        CommonDeviceConfigName     string  `json:"commonDeviceConfigName"`
-        CommonPhoneConfigName      string  `json:"commonPhoneConfigName"`
-        NetworkLocation            string  `json:"networkLocation"`
-        LocationName               string  `json:"locationName"`
-        MediaResourceListName      string  `json:"mediaResourceListName"`
-        NetworkHoldMohAudioSourceId string `json:"networkHoldMohAudioSourceId"`
-        UserHoldMohAudioSourceId   string  `json:"userHoldMohAudioSourceId"`
-        AutomatedAlternateRoutingCssName string `json:"automatedAlternateRoutingCssName"`
-        AarNeighborhoodName        string  `json:"aarNeighborhoodName"`
-        LoadInformation            struct {
-                Special bool   `json:"special"`
-                Value   string `json:"value"`
-        } `json:"loadInformation"`
-        VersionStamp               string `json:"versionStamp"`
-        TraceFlag                  bool   `json:"traceFlag"`
-        MlppDomainId               string `json:"mlppDomainId"`
-        MlppIndicationStatus       string `json:"mlppIndicationStatus"`
-        Preemption                 string `json:"preemption"`
-        UseTrustedRelayPoint       string `json:"useTrustedRelayPoint"`
-        RetryVideoCallAsAudio      bool   `json:"retryVideoCallAsAudio"`
-        SecurityProfileName        string `json:"securityProfileName"`
-        SipProfileName             string `json:"sipProfileName"`
-        CgpnTransformationCssName  string `json:"cgpnTransformationCssName"`
-        UseDevicePoolCgpnTransformCss bool `json:"useDevicePoolCgpnTransformCss"`
-        GeoLocationName            string `json:"geoLocationName"`
-        GeoLocationFilterName      string `json:"geoLocationFilterName"`
-        SendGeoLocation            bool   `json:"sendGeoLocation"`
-        Lines                      struct {
-                Line []struct {
-                        Index           int    `json:"index"`
-                        Dirn            struct {
-                                Pattern            string `json:"pattern"`
-                                RoutePartitionName string `json:"routePartitionName"`
-                        } `json:"dirn"`
-                        Label               string `json:"label"`
-                        Display             string `json:"display"`
-                        DisplayAscii        string `json:"displayAscii"`
-                        E164Mask            string `json:"e164Mask"`
-                        DialPlanWizardId    int    `json:"dialPlanWizardId"`
-                        MwlPolicy           string `json:"mwlPolicy"`
-                        MaxNumCalls         int    `json:"maxNumCalls"`
-                        BusyTrigger         int    `json:"busyTrigger"`
-                        CallInfoDisplay     struct {
-                                CallerName       bool `json:"callerName"`
-                                CallerNumber     bool `json:"callerNumber"`
-                                RedirectedNumber bool `json:"redirectedNumber"`
-                                DialedNumber     bool `json:"dialedNumber"`
-                        } `json:"callInfoDisplay"`
-                        RecordingProfileName string `json:"recordingProfileName"`
-                        MonitoringCssName    string `json:"monitoringCssName"`
-                        RecordingFlag        string `json:"recordingFlag"`
-                        AudibleMwi           string `json:"audibleMwi"`
-                        SpeedDial            string `json:"speedDial"`
-                        PartitionUsage       string `json:"partitionUsage"`
-                        AssociatedEndusers   struct {
-                                Enduser []struct {
-                                        UserId string `json:"userId"`
-                                } `json:"enduser"`
-                        } `json:"associatedEndusers"`
-                        MissedCallLogging    bool   `json:"missedCallLogging"`
-                        RecordingMediaSource string `json:"recordingMediaSource"`
-                } `json:"line"`
-        } `json:"lines"`
-        NumberOfButtons                 int    `json:"numberOfButtons"`
-        PhoneTemplateName               string `json:"phoneTemplateName"`
-        Speeddials                      []string `json:"speeddials"`
-        BusyLampFields                  []string `json:"busyLampFields"`
-        PrimaryPhoneName                string `json:"primaryPhoneName"`
-        RingSettingIdleBlfAudibleAlert  string `json:"ringSettingIdleBlfAudibleAlert"`
-        RingSettingBusyBlfAudibleAlert  string `json:"ringSettingBusyBlfAudibleAlert"`
-        BlfDirectedCallParks            []string `json:"blfDirectedCallParks"`
-        AddOnModules                    []string `json:"addOnModules"`
-        UserLocale                      string `json:"userLocale"`
-        NetworkLocale                   string `json:"networkLocale"`
-        IdleTimeout                     int    `json:"idleTimeout"`
-        AuthenticationUrl               string `json:"authenticationUrl"`
-        DirectoryUrl                    string `json:"directoryUrl"`
-        IdleUrl                         string `json:"idleUrl"`
-        InformationUrl                  string `json:"informationUrl"`
-        MessagesUrl                     string `json:"messagesUrl"`
-        ProxyServerUrl                  string `json:"proxyServerUrl"`
-        ServicesUrl                     string `json:"servicesUrl"`
-        Services                        []string `json:"services"`
-        SoftkeyTemplateName             string `json:"softkeyTemplateName"`
-        DefaultProfileName              string `json:"defaultProfileName"`
-        EnableExtensionMobility         int    `json:"enableExtensionMobility"`
-        SingleButtonBarge               string `json:"singleButtonBarge"`
-        JoinAcrossLines                 string `json:"joinAcrossLines"`
-        BuiltInBridgeStatus             string `json:"builtInBridgeStatus"`
-        CallInfoPrivacyStatus           string `json:"callInfoPrivacyStatus"`
-        HlogStatus                      string `json:"hlogStatus"`
-        OwnerUserName                   string `json:"ownerUserName"`
-        IgnorePresentationIndicators    bool   `json:"ignorePresentationIndicators"`
-        PacketCaptureMode               string `json:"packetCaptureMode"`
-        PacketCaptureDuration           int    `json:"packetCaptureDuration"`
-        SubscribeCallingSearchSpaceName string `json:"subscribeCallingSearchSpaceName"`
-        RerouteCallingSearchSpaceName   string `json:"rerouteCallingSearchSpaceName"`
-        AllowCtiControlFlag             bool   `json:"allowCtiControlFlag"`
-        PresenceGroupName               string `json:"presenceGroupName"`
-        UnattendedPort                  bool   `json:"unattendedPort"`
-        RequireDtmfReception            bool   `json:"requireDtmfReception"`
-        Rfc2833Disabled                 bool   `json:"rfc2833Disabled"`
-        CertificateOperation            string `json:"certificateOperation"`
-        DeviceMobilityMode              string `json:"deviceMobilityMode"`
-        RemoteDevice                    bool   `json:"remoteDevice"`
-        DndOption                       string `json:"dndOption"`
-        DndStatus                       bool   `json:"dndStatus"`
-        IsActive                        bool   `json:"isActive"`
-        IsDualMode                      bool   `json:"isDualMode"`
-        PhoneSuite                      string `json:"phoneSuite"`
-        PhoneServiceDisplay             string `json:"phoneServiceDisplay"`
-        IsProtected                     bool   `json:"isProtected"`
-        MtpRequired                     bool   `json:"mtpRequired"`
-        MtpPreferedCodec                string `json:"mtpPreferedCodec"`
-        DialRulesName                   string `json:"dialRulesName"`
-        SshUserId                       string `json:"sshUserId"`
-        DigestUser                      string `json:"digestUser"`
-        OutboundCallRollover            string `json:"outboundCallRollover"`
-        HotlineDevice                   bool   `json:"hotlineDevice"`
-        SecureInformationUrl            string `json:"secureInformationUrl"`
-        SecureDirectoryUrl              string `json:"secureDirectoryUrl"`
-        SecureMessageUrl                string `json:"secureMessageUrl"`
-        SecureServicesUrl               string `json:"secureServicesUrl"`
-        SecureAuthenticationUrl         string `json:"secureAuthenticationUrl"`
-        SecureIdleUrl                   string `json:"secureIdleUrl"`
-        AlwaysUsePrimeLine              bool   `json:"alwaysUsePrimeLine"`
-        AlwaysUsePrimeLineForVoiceMessage bool `json:"alwaysUsePrimeLineForVoiceMessage"`
-        FeatureControlPolicy            string `json:"featureControlPolicy"`
-        DeviceTrustMode                 string `json:"deviceTrustMode"`
-        ConfidentialAccess              struct {
-                ConfidentialAccessMode string `json:"confidentialAccessMode"`
-                ConfidentialAccessLevel string `json:"confidentialAccessLevel"`
-        } `json:"confidentialAccess"`
-        RequireOffPremiseLocation       bool   `json:"requireOffPremiseLocation"`
-        CgpnIngressDN                   string `json:"cgpnIngressDN"`
-        UseDevicePoolCgpnIngressDN      bool   `json:"useDevicePoolCgpnIngressDN"`
-        Msisdn                          string `json:"msisdn"`
-        EnableCallRoutingToRdWhenNoneIsActive bool `json:"enableCallRoutingToRdWhenNoneIsActive"`
-        WifiHotspotProfile              string `json:"wifiHotspotProfile"`
-        WirelessLanProfileGroup         string `json:"wirelessLanProfileGroup"`
-        ElinGroup                       string `json:"elinGroup"`
+    Name                           string `json:"name"`
+    Description                    string `json:"description"`
+    Product                        string `json:"product"`
+    Class                          string `json:"class"`
+    Protocol                       string `json:"protocol"`
+    ProtocolSide                   string `json:"protocolSide"`
+    CallingSearchSpaceName         string `json:"callingSearchSpaceName"`
+    DevicePoolName                 string `json:"devicePoolName"`
+    CommonDeviceConfigName         string `json:"commonDeviceConfigName"`
+    CommonPhoneConfigName          string `json:"commonPhoneConfigName"`
+    NetworkLocation                string `json:"networkLocation"`
+    LocationName                   string `json:"locationName"`
+    MediaResourceListName          string `json:"mediaResourceListName"`
+    NetworkHoldMohAudioSourceId    string `json:"networkHoldMohAudioSourceId"`
+    UserHoldMohAudioSourceId       string `json:"userHoldMohAudioSourceId"`
+    AutomatedAlternateRoutingCssName string `json:"automatedAlternateRoutingCssName"`
+    AarNeighborhoodName            string `json:"aarNeighborhoodName"`
+    LoadInformation                struct {
+        Special bool   `json:"special"`
+        Value   string `json:"value"`
+    } `json:"loadInformation"`
+    VersionStamp                   string `json:"versionStamp"`
+    TraceFlag                      bool   `json:"traceFlag"`
+    MlppDomainId                   string `json:"mlppDomainId"`
+    MlppIndicationStatus           string `json:"mlppIndicationStatus"`
+    Preemption                     string `json:"preemption"`
+    UseTrustedRelayPoint           string `json:"useTrustedRelayPoint"`
+    RetryVideoCallAsAudio          *bool   `json:"retryVideoCallAsAudio"`
+    SecurityProfileName            string `json:"securityProfileName"`
+    SipProfileName                 string `json:"sipProfileName"`
+    CgpnTransformationCssName      string `json:"cgpnTransformationCssName"`
+    UseDevicePoolCgpnTransformCss  *bool   `json:"useDevicePoolCgpnTransformCss"`
+    GeoLocationName                string `json:"geoLocationName"`
+    GeoLocationFilterName          string `json:"geoLocationFilterName"`
+    SendGeoLocation                bool   `json:"sendGeoLocation"`
+    Lines                          struct {
+        Line []struct {
+            Index           int    `json:"index"`
+            Dirn            struct {
+                Pattern            string `json:"pattern"`
+                RoutePartitionName string `json:"routePartitionName"`
+            } `json:"dirn"`
+            Label               string `json:"label"`
+            Display             string `json:"display"`
+            DisplayAscii        string `json:"displayAscii"`
+            E164Mask            string `json:"e164Mask"`
+            DialPlanWizardId    int    `json:"dialPlanWizardId"`
+            MwlPolicy           string `json:"mwlPolicy"`
+            MaxNumCalls         int    `json:"maxNumCalls"`
+            BusyTrigger         int    `json:"busyTrigger"`
+            CallInfoDisplay     struct {
+                CallerName       *bool `json:"callerName"`
+                CallerNumber     bool `json:"callerNumber"`
+                RedirectedNumber bool `json:"redirectedNumber"`
+                DialedNumber     *bool `json:"dialedNumber"`
+            } `json:"callInfoDisplay"`
+            RecordingProfileName string `json:"recordingProfileName"`
+            MonitoringCssName    string `json:"monitoringCssName"`
+            RecordingFlag        string `json:"recordingFlag"`
+            AudibleMwi           string `json:"audibleMwi"`
+            SpeedDial            string `json:"speedDial"`
+            PartitionUsage       string `json:"partitionUsage"`
+            AssociatedEndusers   struct {
+                Enduser []struct {
+                    UserId string `json:"userId"`
+                } `json:"enduser"`
+            } `json:"associatedEndusers"`
+            MissedCallLogging    *bool   `json:"missedCallLogging"`
+            RecordingMediaSource string `json:"recordingMediaSource"`
+        } `json:"line"`
+    } `json:"lines"`
+    NumberOfButtons                 int    `json:"numberOfButtons"`
+    PhoneTemplateName               string `json:"phoneTemplateName"`
+    Speeddials                      []string `json:"speeddials"`
+    BusyLampFields                  []string `json:"busyLampFields"`
+    PrimaryPhoneName                string `json:"primaryPhoneName"`
+    RingSettingIdleBlfAudibleAlert  string `json:"ringSettingIdleBlfAudibleAlert"`
+    RingSettingBusyBlfAudibleAlert  string `json:"ringSettingBusyBlfAudibleAlert"`
+    BlfDirectedCallParks            []string `json:"blfDirectedCallParks"`
+    AddOnModules                    []string `json:"addOnModules"`
+    UserLocale                      string `json:"userLocale"`
+    NetworkLocale                   string `json:"networkLocale"`
+    IdleTimeout                     int    `json:"idleTimeout"`
+    AuthenticationUrl               string `json:"authenticationUrl"`
+    DirectoryUrl                    string `json:"directoryUrl"`
+    IdleUrl                         string `json:"idleUrl"`
+    InformationUrl                  string `json:"informationUrl"`
+    MessagesUrl                     string `json:"messagesUrl"`
+    ProxyServerUrl                  string `json:"proxyServerUrl"`
+    ServicesUrl                     string `json:"servicesUrl"`
+    Services                        []string `json:"services"`
+    SoftkeyTemplateName             string `json:"softkeyTemplateName"`
+    DefaultProfileName              string `json:"defaultProfileName"`
+    EnableExtensionMobility         int    `json:"enableExtensionMobility"`
+    SingleButtonBarge               string `json:"singleButtonBarge"`
+    JoinAcrossLines                 string `json:"joinAcrossLines"`
+    BuiltInBridgeStatus             string `json:"builtInBridgeStatus"`
+    CallInfoPrivacyStatus           string `json:"callInfoPrivacyStatus"`
+    HlogStatus                      string `json:"hlogStatus"`
+    OwnerUserName                   string `json:"ownerUserName"`
+    IgnorePresentationIndicators    bool   `json:"ignorePresentationIndicators"`
+    PacketCaptureMode               string `json:"packetCaptureMode"`
+    PacketCaptureDuration           int    `json:"packetCaptureDuration"`
+    SubscribeCallingSearchSpaceName string `json:"subscribeCallingSearchSpaceName"`
+    RerouteCallingSearchSpaceName   string `json:"rerouteCallingSearchSpaceName"`
+    AllowCtiControlFlag             *bool   `json:"allowCtiControlFlag"`
+    PresenceGroupName               string `json:"presenceGroupName"`
+    UnattendedPort                  bool   `json:"unattendedPort"`
+    RequireDtmfReception            bool   `json:"requireDtmfReception"`
+    Rfc2833Disabled                 bool   `json:"rfc2833Disabled"`
+    CertificateOperation            string `json:"certificateOperation"`
+    DeviceMobilityMode              string `json:"deviceMobilityMode"`
+    RemoteDevice                    bool   `json:"remoteDevice"`
+    DndOption                       string `json:"dndOption"`
+    DndStatus                       bool   `json:"dndStatus"`
+    IsActive                        bool   `json:"isActive"`
+    IsDualMode                      bool   `json:"isDualMode"`
+    PhoneSuite                      string `json:"phoneSuite"`
+    PhoneServiceDisplay             string `json:"phoneServiceDisplay"`
+    IsProtected                     bool   `json:"isProtected"`
+    MtpRequired                     bool   `json:"mtpRequired"`
+    MtpPreferedCodec                string `json:"mtpPreferedCodec"`
+    DialRulesName                   string `json:"dialRulesName"`
+    SshUserId                       string `json:"sshUserId"`
+    DigestUser                      string `json:"digestUser"`
+    OutboundCallRollover            string `json:"outboundCallRollover"`
+    HotlineDevice                   bool   `json:"hotlineDevice"`
+    SecureInformationUrl            string `json:"secureInformationUrl"`
+    SecureDirectoryUrl              string `json:"secureDirectoryUrl"`
+    SecureMessageUrl                string `json:"secureMessageUrl"`
+    SecureServicesUrl               string `json:"secureServicesUrl"`
+    SecureAuthenticationUrl         string `json:"secureAuthenticationUrl"`
+    SecureIdleUrl                   string `json:"secureIdleUrl"`
+    AlwaysUsePrimeLine              *bool   `json:"alwaysUsePrimeLine"`
+    AlwaysUsePrimeLineForVoiceMessage *bool `json:"alwaysUsePrimeLineForVoiceMessage"`
+    FeatureControlPolicy            string `json:"featureControlPolicy"`
+    DeviceTrustMode                 string `json:"deviceTrustMode"`
+    ConfidentialAccess              struct {
+        ConfidentialAccessMode string `json:"confidentialAccessMode"`
+        ConfidentialAccessLevel string `json:"confidentialAccessLevel"`
+    } `json:"confidentialAccess"`
+    RequireOffPremiseLocation       bool   `json:"requireOffPremiseLocation"`
+    CgpnIngressDN                   string `json:"cgpnIngressDN"`
+    UseDevicePoolCgpnIngressDN      *bool   `json:"useDevicePoolCgpnIngressDN"`
+    Msisdn                          string `json:"msisdn"`
+    EnableCallRoutingToRdWhenNoneIsActive bool `json:"enableCallRoutingToRdWhenNoneIsActive"`
+    WifiHotspotProfile              string `json:"wifiHotspotProfile"`
+    WirelessLanProfileGroup         string `json:"wirelessLanProfileGroup"`
+    ElinGroup                       string `json:"elinGroup"`
 }
 
 // AddPhoneResp structure for SOAP response
 type AddPhoneResp struct {
-        XMLName xml.Name `xml:"Envelope"`
-        Body    struct {
-                AddPhoneResponse struct {
-                        Return struct {
-                                Name string `xml:"name"`
-                        } `xml:"return"`
-                } `xml:"addPhoneResponse"`
-        } `xml:"Body"`
+    XMLName xml.Name `xml:"Envelope"`
+    Body    struct {
+        AddPhoneResponse struct {
+            Return struct {
+                Name string `xml:"name"`
+            } `xml:"return"`
+        } `xml:"addPhoneResponse"`
+    } `xml:"Body"`
+}
+
+func boolToIntStringPtr(value *bool) string {
+    if value == nil {
+        return ""
+    }
+    if *value {
+        return "1"
+    }
+    return "0"
+}
+
+
+func boolToString(value bool) string {
+    if value {
+        return "true"
+    }
+    return "false"
+}
+
+func boolToIntString(value bool) string {
+    if value {
+        return "1"
+    }
+    return "0"
 }
 
 func main() {
@@ -278,19 +308,27 @@ func handleListUsersRequest(w http.ResponseWriter, r *http.Request) {
         jsonResponse(w, http.StatusOK, "Users retrieved successfully", users)
 }
 
-// Handler function for adding a phone
 func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
-        // Parse the incoming JSON request
-        var req AddPhoneReq
-        err := json.NewDecoder(r.Body).Decode(&req)
-        if err != nil {
-                http.Error(w, "Invalid request", http.StatusBadRequest)
-                logResponse("error", "Invalid request", nil)
-                return
-        }
+    var req AddPhoneReq
+    err := json.NewDecoder(r.Body).Decode(&req)
+    if err != nil {
+        http.Error(w, "Invalid request", http.StatusBadRequest)
+        logResponse("error", "Invalid request", nil)
+        return
+    }
 
-        // Manually create the SOAP request
-        soapRequest := fmt.Sprintf(`
+    retryVideoCallAsAudioStr := boolToIntStringPtr(req.RetryVideoCallAsAudio)
+    useDevicePoolCgpnTransformCssStr := boolToIntStringPtr(req.UseDevicePoolCgpnTransformCss)
+    allowCtiControlFlagStr := boolToIntStringPtr(req.AllowCtiControlFlag)
+    callerNameStr := boolToIntStringPtr(req.Lines.Line[0].CallInfoDisplay.CallerName)
+    dialedNumberStr := boolToIntStringPtr(req.Lines.Line[0].CallInfoDisplay.DialedNumber)
+    missedCallLoggingStr := boolToIntStringPtr(req.Lines.Line[0].MissedCallLogging)
+    alwaysUsePrimeLineStr := boolToIntStringPtr(req.AlwaysUsePrimeLine)
+    alwaysUsePrimeLineForVoiceMessageStr := boolToIntStringPtr(req.AlwaysUsePrimeLineForVoiceMessage)
+    useDevicePoolCgpnIngressDNStr := boolToIntStringPtr(req.UseDevicePoolCgpnIngressDN)
+
+    // Construct the SOAP request with the converted values
+    soapRequest := fmt.Sprintf(`
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:axl="http://www.cisco.com/AXL/API/14.0">
    <soapenv:Header/>
    <soapenv:Body>
@@ -313,7 +351,7 @@ func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
             <userHoldMohAudioSourceId>%s</userHoldMohAudioSourceId>
             <automatedAlternateRoutingCssName>%s</automatedAlternateRoutingCssName>
             <aarNeighborhoodName>%s</aarNeighborhoodName>
-            <loadInformation special="%t">%s</loadInformation>
+            <loadInformation special="%s">%s</loadInformation>
             <vendorConfig/>
             <versionStamp>%s</versionStamp>
             <traceFlag>%t</traceFlag>
@@ -321,11 +359,11 @@ func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
             <mlppIndicationStatus>%s</mlppIndicationStatus>
             <preemption>%s</preemption>
             <useTrustedRelayPoint>%s</useTrustedRelayPoint>
-            <retryVideoCallAsAudio>%t</retryVideoCallAsAudio>
+            <retryVideoCallAsAudio>%s</retryVideoCallAsAudio>
             <securityProfileName>%s</securityProfileName>
             <sipProfileName>%s</sipProfileName>
             <cgpnTransformationCssName>%s</cgpnTransformationCssName>
-            <useDevicePoolCgpnTransformCss>%t</useDevicePoolCgpnTransformCss>
+            <useDevicePoolCgpnTransformCss>%s</useDevicePoolCgpnTransformCss>
             <geoLocationName>%s</geoLocationName>
             <geoLocationFilterName>%s</geoLocationFilterName>
             <sendGeoLocation>%t</sendGeoLocation>
@@ -345,10 +383,10 @@ func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
                   <maxNumCalls>%d</maxNumCalls>
                   <busyTrigger>%d</busyTrigger>
                   <callInfoDisplay>
-                     <callerName>%t</callerName>
+                     <callerName>%s</callerName>
                      <callerNumber>%t</callerNumber>
                      <redirectedNumber>%t</redirectedNumber>
-                     <dialedNumber>%t</dialedNumber>
+                     <dialedNumber>%s</dialedNumber>
                   </callInfoDisplay>
                   <recordingProfileName>%s</recordingProfileName>
                   <monitoringCssName>%s</monitoringCssName>
@@ -361,19 +399,19 @@ func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
                         <userId>%s</userId>
                      </enduser>
                   </associatedEndusers>
-                  <missedCallLogging>%t</missedCallLogging>
+                  <missedCallLogging>%s</missedCallLogging>
                   <recordingMediaSource>%s</recordingMediaSource>
                </line>
             </lines>
             <numberOfButtons>%d</numberOfButtons>
             <phoneTemplateName>%s</phoneTemplateName>
-            <speeddials>%s</speeddials>
-            <busyLampFields>%s</busyLampFields>
+            <speeddials/>
+            <busyLampFields/>
             <primaryPhoneName>%s</primaryPhoneName>
             <ringSettingIdleBlfAudibleAlert>%s</ringSettingIdleBlfAudibleAlert>
             <ringSettingBusyBlfAudibleAlert>%s</ringSettingBusyBlfAudibleAlert>
-            <blfDirectedCallParks>%s</blfDirectedCallParks>
-            <addOnModules>%s</addOnModules>
+            <blfDirectedCallParks/>
+            <addOnModules/>
             <userLocale>%s</userLocale>
             <networkLocale>%s</networkLocale>
             <idleTimeout>%d</idleTimeout>
@@ -384,7 +422,7 @@ func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
             <messagesUrl>%s</messagesUrl>
             <proxyServerUrl>%s</proxyServerUrl>
             <servicesUrl>%s</servicesUrl>
-            <services>%s</services>
+            <services/>
             <softkeyTemplateName>%s</softkeyTemplateName>
             <defaultProfileName>%s</defaultProfileName>
             <enableExtensionMobility>%d</enableExtensionMobility>
@@ -399,7 +437,7 @@ func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
             <packetCaptureDuration>%d</packetCaptureDuration>
             <subscribeCallingSearchSpaceName>%s</subscribeCallingSearchSpaceName>
             <rerouteCallingSearchSpaceName>%s</rerouteCallingSearchSpaceName>
-            <allowCtiControlFlag>%t</allowCtiControlFlag>
+            <allowCtiControlFlag>%s</allowCtiControlFlag>
             <presenceGroupName>%s</presenceGroupName>
             <unattendedPort>%t</unattendedPort>
             <requireDtmfReception>%t</requireDtmfReception>
@@ -427,8 +465,8 @@ func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
             <secureServicesUrl>%s</secureServicesUrl>
             <secureAuthenticationUrl>%s</secureAuthenticationUrl>
             <secureIdleUrl>%s</secureIdleUrl>
-            <alwaysUsePrimeLine>%t</alwaysUsePrimeLine>
-            <alwaysUsePrimeLineForVoiceMessage>%t</alwaysUsePrimeLineForVoiceMessage>
+            <alwaysUsePrimeLine>%s</alwaysUsePrimeLine>
+            <alwaysUsePrimeLineForVoiceMessage>%s</alwaysUsePrimeLineForVoiceMessage>
             <featureControlPolicy>%s</featureControlPolicy>
             <deviceTrustMode>%s</deviceTrustMode>
             <confidentialAccess>
@@ -437,7 +475,7 @@ func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
             </confidentialAccess>
             <requireOffPremiseLocation>%t</requireOffPremiseLocation>
             <cgpnIngressDN>%s</cgpnIngressDN>
-            <useDevicePoolCgpnIngressDN>%t</useDevicePoolCgpnIngressDN>
+            <useDevicePoolCgpnIngressDN>%s</useDevicePoolCgpnIngressDN>
             <msisdn>%s</msisdn>
             <enableCallRoutingToRdWhenNoneIsActive>%t</enableCallRoutingToRdWhenNoneIsActive>
             <wifiHotspotProfile>%s</wifiHotspotProfile>
@@ -447,158 +485,154 @@ func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
       </axl:addPhone>
    </soapenv:Body>
 </soapenv:Envelope>`,
-                req.Name,
-                req.Description,
-                req.Product,
-                req.Class,
-                req.Protocol,
-                req.ProtocolSide,
-                req.CallingSearchSpaceName,
-                req.DevicePoolName,
-                req.CommonDeviceConfigName,
-                req.CommonPhoneConfigName,
-                req.NetworkLocation,
-                req.LocationName,
-                req.MediaResourceListName,
-                req.NetworkHoldMohAudioSourceId,
-                req.UserHoldMohAudioSourceId,
-                req.AutomatedAlternateRoutingCssName,
-                req.AarNeighborhoodName,
-                req.LoadInformation.Special,
-                req.LoadInformation.Value,
-                req.VersionStamp,
-                req.TraceFlag,
-                req.MlppDomainId,
-                req.MlppIndicationStatus,
-                req.Preemption,
-                req.UseTrustedRelayPoint,
-                req.RetryVideoCallAsAudio,
-                req.SecurityProfileName,
-                req.SipProfileName,
-                req.CgpnTransformationCssName,
-                req.UseDevicePoolCgpnTransformCss,
-                req.GeoLocationName,
-                req.GeoLocationFilterName,
-                req.SendGeoLocation,
-                req.Lines.Line[0].Index,
-                req.Lines.Line[0].Dirn.Pattern,
-                req.Lines.Line[0].Dirn.RoutePartitionName,
-                req.Lines.Line[0].Label,
-                req.Lines.Line[0].Display,
-                req.Lines.Line[0].DisplayAscii,
-                req.Lines.Line[0].E164Mask,
-                req.Lines.Line[0].DialPlanWizardId,
-                req.Lines.Line[0].MwlPolicy,
-                req.Lines.Line[0].MaxNumCalls,
-                req.Lines.Line[0].BusyTrigger,
-                req.Lines.Line[0].CallInfoDisplay.CallerName,
-                req.Lines.Line[0].CallInfoDisplay.CallerNumber,
-                req.Lines.Line[0].CallInfoDisplay.RedirectedNumber,
-                req.Lines.Line[0].CallInfoDisplay.DialedNumber,
-                req.Lines.Line[0].RecordingProfileName,
-                req.Lines.Line[0].MonitoringCssName,
-                req.Lines.Line[0].RecordingFlag,
-                req.Lines.Line[0].AudibleMwi,
-                req.Lines.Line[0].SpeedDial,
-                req.Lines.Line[0].PartitionUsage,
-                req.Lines.Line[0].AssociatedEndusers.Enduser[0].UserId,
-                req.Lines.Line[0].MissedCallLogging,
-                req.Lines.Line[0].RecordingMediaSource,
-                req.NumberOfButtons,
-                req.PhoneTemplateName,
-                "speeddials_placeholder",
-                "busyLampFields_placeholder",
-                req.PrimaryPhoneName,
-                req.RingSettingIdleBlfAudibleAlert,
-                req.RingSettingBusyBlfAudibleAlert,
-                "blfDirectedCallParks_placeholder",
-                "addOnModules_placeholder",
-                req.UserLocale,
-                req.NetworkLocale,
-                req.IdleTimeout,
-                req.AuthenticationUrl,
-                req.DirectoryUrl,
-                req.IdleUrl,
-                req.InformationUrl,
-                req.MessagesUrl,
-                req.ProxyServerUrl,
-                req.ServicesUrl,
-                "services_placeholder",
-                req.SoftkeyTemplateName,
-                req.DefaultProfileName,
-                req.EnableExtensionMobility,
-                req.SingleButtonBarge,
-                req.JoinAcrossLines,
-                req.BuiltInBridgeStatus,
-                req.CallInfoPrivacyStatus,
-                req.HlogStatus,
-                req.OwnerUserName,
-                req.IgnorePresentationIndicators,
-                req.PacketCaptureMode,
-                req.PacketCaptureDuration,
-                req.SubscribeCallingSearchSpaceName,
-                req.RerouteCallingSearchSpaceName,
-                req.AllowCtiControlFlag,
-                req.PresenceGroupName,
-                req.UnattendedPort,
-                req.RequireDtmfReception,
-                req.Rfc2833Disabled,
-                req.CertificateOperation,
-                req.DeviceMobilityMode,
-                req.RemoteDevice,
-                req.DndOption,
-                req.DndStatus,
-                req.IsActive,
-                req.IsDualMode,
-                req.PhoneSuite,
-                req.PhoneServiceDisplay,
-                req.IsProtected,
-                req.MtpRequired,
-                req.MtpPreferedCodec,
-                req.DialRulesName,
-                req.SshUserId,
-                req.DigestUser,
-                req.OutboundCallRollover,
-                req.HotlineDevice,
-                req.SecureInformationUrl,
-                req.SecureDirectoryUrl,
-                req.SecureMessageUrl,
-                req.SecureServicesUrl,
-                req.SecureAuthenticationUrl,
-                req.SecureIdleUrl,
-                req.AlwaysUsePrimeLine,
-                req.AlwaysUsePrimeLineForVoiceMessage,
-                req.FeatureControlPolicy,
-                req.DeviceTrustMode,
-                req.ConfidentialAccess.ConfidentialAccessMode,
-                req.ConfidentialAccess.ConfidentialAccessLevel,
-                req.RequireOffPremiseLocation,
-                req.CgpnIngressDN,
-                req.UseDevicePoolCgpnIngressDN,
-                req.Msisdn,
-                req.EnableCallRoutingToRdWhenNoneIsActive,
-                req.WifiHotspotProfile,
-                req.WirelessLanProfileGroup,
-                req.ElinGroup)
+        req.Name,
+        req.Description,
+        req.Product,
+        req.Class,
+        req.Protocol,
+        req.ProtocolSide,
+        req.CallingSearchSpaceName,
+        req.DevicePoolName,
+        req.CommonDeviceConfigName,
+        req.CommonPhoneConfigName,
+        req.NetworkLocation,
+        req.LocationName,
+        req.MediaResourceListName,
+        req.NetworkHoldMohAudioSourceId,
+        req.UserHoldMohAudioSourceId,
+        req.AutomatedAlternateRoutingCssName,
+        req.AarNeighborhoodName,
+        boolToString(req.LoadInformation.Special),
+        req.LoadInformation.Value,
+        req.VersionStamp,
+        req.TraceFlag,
+        req.MlppDomainId,
+        req.MlppIndicationStatus,
+        req.Preemption,
+        req.UseTrustedRelayPoint,
+        retryVideoCallAsAudioStr,
+        req.SecurityProfileName,
+        req.SipProfileName,
+        req.CgpnTransformationCssName,
+        useDevicePoolCgpnTransformCssStr,
+        req.GeoLocationName,
+        req.GeoLocationFilterName,
+        req.SendGeoLocation,
+        req.Lines.Line[0].Index,
+        req.Lines.Line[0].Dirn.Pattern,
+        req.Lines.Line[0].Dirn.RoutePartitionName,
+        req.Lines.Line[0].Label,
+        req.Lines.Line[0].Display,
+        req.Lines.Line[0].DisplayAscii,
+        req.Lines.Line[0].E164Mask,
+        req.Lines.Line[0].DialPlanWizardId,
+        req.Lines.Line[0].MwlPolicy,
+        req.Lines.Line[0].MaxNumCalls,
+        req.Lines.Line[0].BusyTrigger,
+        callerNameStr,
+        req.Lines.Line[0].CallInfoDisplay.CallerNumber,
+        req.Lines.Line[0].CallInfoDisplay.RedirectedNumber,
+        dialedNumberStr,
+        req.Lines.Line[0].RecordingProfileName,
+        req.Lines.Line[0].MonitoringCssName,
+        req.Lines.Line[0].RecordingFlag,
+        req.Lines.Line[0].AudibleMwi,
+        req.Lines.Line[0].SpeedDial,
+        req.Lines.Line[0].PartitionUsage,
+        req.Lines.Line[0].AssociatedEndusers.Enduser[0].UserId,
+        missedCallLoggingStr,
+        req.Lines.Line[0].RecordingMediaSource,
+        req.NumberOfButtons,
+        req.PhoneTemplateName,
+        req.PrimaryPhoneName,
+        req.RingSettingIdleBlfAudibleAlert,
+        req.RingSettingBusyBlfAudibleAlert,
+        req.UserLocale,
+        req.NetworkLocale,
+        req.IdleTimeout,
+        req.AuthenticationUrl,
+        req.DirectoryUrl,
+        req.IdleUrl,
+        req.InformationUrl,
+        req.MessagesUrl,
+        req.ProxyServerUrl,
+        req.ServicesUrl,
+        req.SoftkeyTemplateName,
+        req.DefaultProfileName,
+        req.EnableExtensionMobility,
+        req.SingleButtonBarge,
+        req.JoinAcrossLines,
+        req.BuiltInBridgeStatus,
+        req.CallInfoPrivacyStatus,
+        req.HlogStatus,
+        req.OwnerUserName,
+        req.IgnorePresentationIndicators,
+        req.PacketCaptureMode,
+        req.PacketCaptureDuration,
+        req.SubscribeCallingSearchSpaceName,
+        req.RerouteCallingSearchSpaceName,
+        allowCtiControlFlagStr,
+        req.PresenceGroupName,
+        req.UnattendedPort,
+        req.RequireDtmfReception,
+        req.Rfc2833Disabled,
+        req.CertificateOperation,
+        req.DeviceMobilityMode,
+        req.RemoteDevice,
+        req.DndOption,
+        req.DndStatus,
+        req.IsActive,
+        req.IsDualMode,
+        req.PhoneSuite,
+        req.PhoneServiceDisplay,
+        req.IsProtected,
+        req.MtpRequired,
+        req.MtpPreferedCodec,
+        req.DialRulesName,
+        req.SshUserId,
+        req.DigestUser,
+        req.OutboundCallRollover,
+        req.HotlineDevice,
+        req.SecureInformationUrl,
+        req.SecureDirectoryUrl,
+        req.SecureMessageUrl,
+        req.SecureServicesUrl,
+        req.SecureAuthenticationUrl,
+        req.SecureIdleUrl,
+        alwaysUsePrimeLineStr,
+        alwaysUsePrimeLineForVoiceMessageStr,
+        req.FeatureControlPolicy,
+        req.DeviceTrustMode,
+        req.ConfidentialAccess.ConfidentialAccessMode,
+        req.ConfidentialAccess.ConfidentialAccessLevel,
+        req.RequireOffPremiseLocation,
+        req.CgpnIngressDN,
+        useDevicePoolCgpnIngressDNStr,
+        req.Msisdn,
+        req.EnableCallRoutingToRdWhenNoneIsActive,
+        req.WifiHotspotProfile,
+        req.WirelessLanProfileGroup,
+        req.ElinGroup)
 
-        // Forward the request to Cisco AXL API
-        response, err := sendAXLRequest(soapRequest)
-        if err != nil {
-                http.Error(w, "Failed to forward request", http.StatusInternalServerError)
-                logResponse("error", err.Error(), nil)
-                return
-        }
+    log.Printf("Generated SOAP request: %s", soapRequest)
 
-        // Parse the SOAP response
-        var resp AddPhoneResp
-        if err := xml.Unmarshal(response, &resp); err != nil {
-                http.Error(w, "Failed to parse response", http.StatusInternalServerError)
-                logResponse("error", err.Error(), nil)
-                return
-        }
+    response, err := sendAXLRequest(soapRequest)
+    if err != nil {
+        http.Error(w, "Failed to forward request", http.StatusInternalServerError)
+        logResponse("error", err.Error(), nil)
+        return
+    }
 
-        // Write the JSON response back to the client
-        jsonResponse(w, http.StatusOK, "Phone added successfully", resp.Body.AddPhoneResponse.Return)
+    log.Printf("Received SOAP response: %s", string(response))
+
+    var resp AddPhoneResp
+    if err := xml.Unmarshal(response, &resp); err != nil {
+        http.Error(w, "Failed to parse response", http.StatusInternalServerError)
+        logResponse("error", err.Error(), nil)
+        return
+    }
+
+    jsonResponse(w, http.StatusOK, "Phone added successfully", resp.Body.AddPhoneResponse.Return)
 }
 
 /****
@@ -609,14 +643,12 @@ func handleAddPhoneRequest(w http.ResponseWriter, r *http.Request) {
 
 // Function to send AXL requests
 func sendAXLRequest(soapRequest string) ([]byte, error) {
-        // Set up the HTTP client with TLS configuration
         httpClient := &http.Client{
                 Transport: &http.Transport{
                         TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
                 },
         }
 
-        // Create the HTTP request
         req, err := http.NewRequest("POST", "https://10.10.20.1:8443/axl/", bytes.NewBuffer([]byte(soapRequest)))
         if err != nil {
                 return nil, fmt.Errorf("failed to create HTTP request: %v", err)
@@ -624,33 +656,24 @@ func sendAXLRequest(soapRequest string) ([]byte, error) {
         req.Header.Set("Content-Type", "text/xml")
         req.Header.Set("SOAPAction", "CUCM:DB ver=14.0")
 
-        // Add Basic Authentication header
-        username := "<redacted>"
-        password := "<redacted>"
+        username := ""
+        password := ""
         auth := username + ":" + password
         req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
 
-        // Send the HTTP request
         resp, err := httpClient.Do(req)
         if err != nil {
                 return nil, fmt.Errorf("failed to send HTTP request: %v", err)
         }
         defer resp.Body.Close()
 
-        // Read the response body
         body, err := ioutil.ReadAll(resp.Body)
         if err != nil {
                 return nil, fmt.Errorf("failed to read response body: %v", err)
         }
 
-        // Log the HTML response for debugging
-        if resp.Header.Get("Content-Type") == "text/html" {
-                log.Printf("Received HTML response: %s", string(body))
-        }
-
         return body, nil
 }
-
 
 // Function to send JSON responses
 func jsonResponse(w http.ResponseWriter, statusCode int, message string, data interface{}) {
