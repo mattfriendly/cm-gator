@@ -214,15 +214,13 @@ type AddPhoneReq struct {
 
 // AddPhoneResp structure for SOAP response
 type AddPhoneResp struct {
-    XMLName xml.Name `xml:"Envelope"`
-    Body    struct {
+    Body struct {
         AddPhoneResponse struct {
-            Return struct {
-                Name string `xml:"name"`
-            } `xml:"return"`
+            Return string `xml:"return"`
         } `xml:"addPhoneResponse"`
     } `xml:"Body"`
 }
+
 
 func boolToIntStringPtr(value *bool) string {
     if value == nil {
@@ -240,13 +238,6 @@ func boolToString(value bool) string {
         return "true"
     }
     return "false"
-}
-
-func boolToIntString(value bool) string {
-    if value {
-        return "1"
-    }
-    return "0"
 }
 
 func main() {
