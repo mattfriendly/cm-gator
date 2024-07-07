@@ -647,8 +647,8 @@ func sendAXLRequest(soapRequest string) ([]byte, error) {
         req.Header.Set("Content-Type", "text/xml")
         req.Header.Set("SOAPAction", "CUCM:DB ver=14.0")
 
-        username := "axluser"
-        password := "temp123"
+        username := ""
+        password := ""
         auth := username + ":" + password
         req.Header.Set("Authorization", "Basic "+base64.StdEncoding.EncodeToString([]byte(auth)))
 
