@@ -4,7 +4,6 @@ export async function getUsers() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                // add req headers here
             }
         });
         if (!response.ok) {
