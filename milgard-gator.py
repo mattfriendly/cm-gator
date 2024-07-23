@@ -72,7 +72,7 @@ def get_users_by_name(extracted_names, debug=False):
     return users
 
 # Function to generate location report
-def generate_location_report(debug=False):
+def generate_location_report(include_devices, include_end_users, include_dns, colorize, debug=False):
     dns = get_all_dns(debug)
 
     # Group DNs by location
@@ -88,7 +88,10 @@ def generate_location_report(debug=False):
     reports = {}
 
     for location, dns in locations.items():
-        phones = get_phones_by_description(location, debug)
+        if debug:
+            print(f"Processing location: {location}")
+
+        phones = get_phones_by_description(location, debug) if include_devices else []
         phone_names = [phone['name'] for phone in phones]
 
         # Extract user names from descriptions
@@ -100,35 +103,72 @@ def generate_location_report(debug=False):
                 last_name = match.group(2)
                 extracted_names.append((first_name, last_name))
 
-        users = get_users_by_name(extracted_names, debug)
+        users = get_users_by_name(extracted_names, debug) if include_end_users else []
 
         reports[location] = {
             'phones': phones,
             'users': users,
-            'directory_numbers': dns
+            'directory_numbers': dns if include_dns else []
         }
 
     return reports
 
+# Function to print the report
+def print_report(reports, colorize):
+    for location, report in reports.items():
+        if colorize:
+            print(f"\n\033[1;34mReport for Location: {location}\033[0m")
+        else:
+            print(f"\nReport for Location: {location}")
+
+        if report['phones']:
+            if colorize:
+                print("\n\033[1;32mPhones:\033[0m")
+            else:
+                print("\nPhones:")
+            for phone in report['phones']:
+                if colorize:
+                    print(f"\033[1;33mName:\033[0m {phone['name']}, \033[1;35mDescription:\033[0m {phone['description']}, \033[1;36mDevice Pool:\033[0m {phone['devicePoolName']}")
+                else:
+                    print(f"Name: {phone['name']}, Description: {phone['description']}, Device Pool: {phone['devicePoolName']}")
+
+        if report['users']:
+            if colorize:
+                print("\n\033[1;32mUsers:\033[0m")
+            else:
+                print("\nUsers:")
+            for user in report['users']:
+                if colorize:
+                    print(f"\033[1;33mUser ID:\033[0m {user['userid']}, \033[1;35mName:\033[0m {user['firstName']} {user['lastName']}")
+                else:
+                    print(f"User ID: {user['userid']}, Name: {user['firstName']} {user['lastName']}")
+
+        if report['directory_numbers']:
+            if colorize:
+                print("\n\033[1;32mDirectory Numbers:\033[0m")
+            else:
+                print("\nDirectory Numbers:")
+            for dn in report['directory_numbers']:
+                if colorize:
+                    print(f"\033[1;33mPattern:\033[0m {dn['pattern']}, \033[1;35mDescription:\033[0m {dn['description']}")
+                else:
+                    print(f"Pattern: {dn['pattern']}, Description: {dn['description']}")
+
 # Main function
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="CUCM AXL Report Generator")
+    parser.add_argument('--device', action='store_true', help='Include device information in the report')
+    parser.add_argument('--end-user', action='store_true', help='Include end-user information in the report')
+    parser.add_argument('--dn', action='store_true', help='Include directory number information in the report')
     parser.add_argument('--debug', action='store_true', help='Enable debug mode')
+    parser.add_argument('--colorize', action='store_true', help='Enable colorful output')
     args = parser.parse_args()
 
     debug = args.debug
-    reports = generate_location_report(debug)
+    include_devices = args.device
+    include_end_users = args.end_user
+    include_dns = args.dn
+    colorize = args.colorize
 
-    for location, report in reports.items():
-        print(f"\n\033[1;34mReport for Location: {location}\033[0m")
-        print("\n\033[1;32mPhones:\033[0m")
-        for phone in report['phones']:
-            print(f"\033[1;33mName:\033[0m {phone['name']}, \033[1;35mDescription:\033[0m {phone['description']}, \033[1;36mDevice Pool:\033[0m {phone['devicePoolName']}")
-
-        print("\n\033[1;32mUsers:\033[0m")
-        for user in report['users']:
-            print(f"\033[1;33mUser ID:\033[0m {user['userid']}, \033[1;35mName:\033[0m {user['firstName']} {user['lastName']}")
-
-        print("\n\033[1;32mDirectory Numbers:\033[0m")
-        for dn in report['directory_numbers']:
-            print(f"\033[1;33mPattern:\033[0m {dn['pattern']}, \033[1;35mDescription:\033[0m {dn['description']}")
+    reports = generate_location_report(include_devices, include_end_users, include_dns, colorize, debug)
+    print_report(reports, colorize)
