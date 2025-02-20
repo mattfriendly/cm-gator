@@ -1,4 +1,4 @@
-module milgard-gator
+module cm-gator
 
 go 1.21.5
 
